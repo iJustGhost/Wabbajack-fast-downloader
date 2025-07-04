@@ -1,4 +1,8 @@
 import webbrowser
+import time
+import os
+
+download_path = ""
 
 def read_links_in_batches(file_path, batch_size):
     """Read links from a text file in batches and yield each batch."""
@@ -42,12 +46,19 @@ def open_links_in_batches(file_path, batch_size):
         print(f"Opening batch {current_batch} of {total_batches}...")
         for link in batch_links:
             webbrowser.open(link)
-        input("Press Enter to continue to the next batch...")
+        time.sleep(15) # Delay and wait to receive downloads
+        while True: # Check if there is still .aria2 (currently) downloading files
+            currently_downloading = []
+            for current_file in os.listdir(download_path):
+                if current_file.endswith(".aria2"):
+                    currently_downloading.append(current_file)
+            if len(currently_downloading) == 0: # Break when every files are done downloading
+                break
         current_batch += 1
 
 def main():
     file_path = 'output.txt'
-    batch_size = 20
+    batch_size = 3
     open_links_in_batches(file_path, batch_size)
 
 if __name__ == "__main__":
